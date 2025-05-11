@@ -1,0 +1,54 @@
+# Model arguments
+model_name_or_path: "unsloth/Qwen2.5-0.5B-Instruct"  # Keep original model path for tokenizer
+model_revision: main
+torch_dtype: float32  # Changed to float32 for better compatibility
+bf16: false           # Disabled for remote inference
+tf32: false
+
+# Dataset arguments
+dataset_id_or_path: 'openai/gsm8k'
+
+# Training arguments (optimized for VPS)
+max_steps: 20
+gradient_accumulation_steps: 2  # Reduced from 4 for lower memory
+gradient_checkpointing: false   # Disabled for remote inference
+learning_rate: 5.0e-7
+lr_scheduler_type: cosine
+warmup_ratio: 0.03
+
+# GRPO arguments (optimized)
+use_vllm: false
+num_generations: 2
+per_device_train_batch_size: 1  # Reduced from 2 for low-spec
+beta: 0.001
+max_prompt_length: 256
+max_completion_length: 1024
+
+# Remote Inference Configuration
+use_remote_inference: true
+inference_endpoint: "http://152.42.189.162:14444/v1"  # Through Nginx proxy
+inference_timeout: 60  # Seconds
+
+# Vikey Specific Parameters
+vikey_params:
+  model_id: "qwen2.5-0.5b-instruct"  # Must match Vikey's model ID
+  max_retries: 3
+  temperature: 0.7
+  top_p: 0.9
+  frequency_penalty: 0.0
+  presence_penalty: 0.0
+
+# Logging arguments
+logging_strategy: steps
+logging_steps: 2
+report_to:
+- tensorboard
+save_strategy: "steps"
+save_steps: 25
+seed: 42
+
+# Script arguments
+max_rounds: 10000
+
+# Output configuration
+output_dir: runs/gsm8k/multinode/Qwen2.5-0.5B-Instruct-Gensyn-Swarm
